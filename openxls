@@ -2,7 +2,7 @@
 # openxlsx.py - read all data from
 
 
-import openpyxl, pprint, re
+import openpyxl, pprint, datetime
 
 
 def collect_headers(file_name, sheet_name):
@@ -16,6 +16,9 @@ def collect_headers(file_name, sheet_name):
         headers.append(title)
     return headers
 
+def format_phone_number(phone_number):
+    normalized_phone_number = phone_number[1:]
+    return normalized_phone_number
 
 def which_column(file_name, sheet_name, column_to_search):
     headers = collect_headers(file_name, sheet_name)
@@ -76,6 +79,35 @@ def get_matching_rows_id_by_column(file_name, sheet_name, column_to_check, searc
             matching_column_id.append(row)
     return matching_column_id
 
+def get_matching_rows_id_by_time_interval(file_name, sheet_name, column_to_check, interval):
+    matching_column_id = []
+
+    print('Opening workbook...')
+    wb = openpyxl.load_workbook(file_name)
+    sheet = wb.get_sheet_by_name(sheet_name)
+    max_row_number = get_how_many_rows(file_name, sheet_name)
+
+    current_date = datetime.datetime.now()
+    input_var = int(input("Enter how many days in the future (default = 7 days) : ") or interval)
+    print(current_date)
+    filter_end_date = current_date + datetime.timedelta(days=input_var)
+
+    for row in range(2, max_row_number + 1):
+        if current_date <= sheet[column_to_check + str(row)].value <= filter_end_date:
+            matching_column_id.append(row)
+    return matching_column_id
+
+def get_all_programs_for_group(file_name, sheet_name, column_to_check, search_value, tour_lead_column, tour_leader):
+    matching_column_id = []
+
+    wb = openpyxl.load_workbook(file_name)
+    sheet = wb.get_sheet_by_name(sheet_name)
+    max_row_number = get_how_many_rows(file_name, sheet_name)
+
+    for row in range(2, max_row_number + 1):
+        if (search_value == sheet[column_to_check + str(row)].value and tour_leader == sheet[tour_lead_column + str(row)].value):
+            matching_column_id.append(row)
+    return matching_column_id
 
 def search_data_by_row(file_name, sheet_name, row_id):
     wb = openpyxl.load_workbook(file_name)
@@ -83,33 +115,62 @@ def search_data_by_row(file_name, sheet_name, row_id):
     row_content = {}
     search_result = []
     header_array = collect_headers(file_name, sheet_name)
+    #print(header_array)
 
-    for i, row_id in enumerate(row_id):
-        for column in range(0, sheet.max_column):
-            cell_value = sheet[chr(ord('A') + column) + str(row_id)].value
-            row_content[header_array[column]] = cell_value
-        search_result.append(row_content)
-    return search_result
-
-
-# header_array = collect_headers('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','DB')
-# print(header_array)
-
-result_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Turakiserok', 'Short name')
-# print(result_column)
-search_rows_id = get_matching_rows_id_by_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx',
-                                                'Turakiserok', result_column, 'Sam')
-# print(search_rows_id)
-result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Turakiserok',
-                            search_rows_id)
-print(result)
-read_all_data('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Programs')
+    if row_id:
+        for i, row_id in enumerate(row_id):
+            for column in range(0, sheet.max_column):
+                cell_value = sheet[chr(ord('A') + column) + str(row_id)].value
+                #print(cell_value, type(cell_value))
+                if header_array[column] == 'Phone number':
+                    cell_value = format_phone_number(cell_value)
+                row_content[header_array[column]] = cell_value
+            search_result.append(row_content)
+        return search_result
+    return False
 
 
-result_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', 'Tour Leader contact')
-# print(result_column)
-search_rows_id = get_matching_rows_id_by_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB',
-                                                result_column, 'Sam')
-# print(search_rows_id)
+# TODO: How to search Tour Leader contact details
+#result_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Turakiserok', 'Short name')
+#search_rows_id = get_matching_rows_id_by_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Turakiserok', result_column, 'Sam')
+#result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Turakiserok', search_rows_id)
+#print(result)
+
+# TODO: Read all data from a sheet
+#read_all_data('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Programs')
+
+# TODO: Collect all matching rows for a person
+#result_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', 'Tour Leader contact')
+#search_rows_id = get_matching_rows_id_by_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', result_column, 'Sam')
+#result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', search_rows_id)
+#print(result)
+
+# TODO: Collect all programs for a group
+#current_date = datetime.datetime.now()
+#input_var = input("Enter date (2017-04-22): ")
+#input_date = datetime.datetime.strptime(input_var, '%Y-%m-%d')
+#print(input_date, type(input_date))
+#print(current_date)
+#print(current_date - datetime.timedelta(days=3))
+#target_date = datetime.date(2017, 4, 22)
+#print('target date', target_date, type(target_date))
+#arrive_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', 'Group arrival date')
+#print(arrive_column, type(arrive_column))
+#tour_lead_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', 'Tour Leader contact')
+#print(tour_lead_column, type(tour_lead_column))
+#search_rows_id = get_all_programs_for_group('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', arrive_column, input_date, tour_lead_column, 'Sam')
+#print(search_rows_id)
+#result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', search_rows_id)
+#print(result)
+
+# TODO: Collect upcoming groups in X days
+current_date = datetime.datetime.now()
+#input_var = int(input("Enter how many days in the future (default = 7 days) : ") or "7")
+print(current_date)
+#print(current_date + datetime.timedelta(days=input_var))
+arrive_date_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', 'Group arrival date')
+print(arrive_date_column)
+search_rows_id = get_matching_rows_id_by_time_interval('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', arrive_date_column, 7)
+print(search_rows_id)
 result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', search_rows_id)
 print(result)
