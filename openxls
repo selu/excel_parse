@@ -68,25 +68,22 @@ def search_person(file_name, sheet_name, column_to_check, name):
             #matching_column_id.append(row)
     return matching_column_id
 
-def search_person_data_by_row (file_name, sheet_name,column_id):
+def search_data_by_row (file_name, sheet_name,row_id):
     wb = openpyxl.load_workbook(file_name)
     sheet = wb.get_sheet_by_name(sheet_name)
     person_data = {}
+    row_content ={}
     header_array = collect_headers(file_name, sheet_name)
 
-    company = sheet['A' + str(column_id)].value
-    name = sheet['B' + str(column_id)].value
-    short_name = sheet['C' + str(column_id)].value
-    phone_number = sheet['D' + str(column_id)].value[1:]
-    preferred_app = sheet['E' + str(column_id)].value
+    for column in range(0, sheet.max_column):
+        cell_value = sheet[chr(ord('A') + column) + str(row_id)].value
+        row_content[header_array[column]] = cell_value
 
-    person_data = {header_array[0]: company, header_array[1]: name, header_array[2]: short_name, header_array[3]: phone_number,
-                   header_array[4]: preferred_app}
-    print(person_data)
+    print(row_content)
 
 #header_array = collect_headers('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','DB')
 #print(header_array)
-#search_column_id = search_person('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Turakiserok','C','Sam')
+search_column_id = search_person('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Turakiserok','C','Sam')
 #print(search_column_id)
-#search_person_data_by_row ('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Turakiserok', search_column_id)
-read_all_data('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Programs')
+search_data_by_row ('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Turakiserok', search_column_id)
+#read_all_data('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Programs')
