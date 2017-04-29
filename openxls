@@ -16,6 +16,14 @@ def collect_headers(file_name, sheet_name):
         headers.append(title)
     return headers
 
+def which_column(file_name, sheet_name, column_to_search):
+    headers = collect_headers(file_name, sheet_name)
+
+    for i, val in enumerate(headers):
+        if val == column_to_search:
+            return chr(ord('A') + i)
+
+
 def get_how_many_rows(file_name, sheet_name):
     wb = openpyxl.load_workbook(file_name)
     sheet = wb.get_sheet_by_name(sheet_name)
@@ -83,7 +91,10 @@ def search_data_by_row (file_name, sheet_name,row_id):
 
 #header_array = collect_headers('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','DB')
 #print(header_array)
-search_column_id = search_person('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Turakiserok','C','Sam')
-#print(search_column_id)
-search_data_by_row ('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Turakiserok', search_column_id)
+result_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Idegenvezetok','Short name')
+print(result_column)
+search_row_id = search_person('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Idegenvezetok', result_column, 'Ancsi')
+print(search_row_id)
+search_data_by_row ('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Idegenvezetok', search_row_id)
 #read_all_data('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Programs')
+
