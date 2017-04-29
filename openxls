@@ -1,0 +1,92 @@
+#! python3
+# openxlsx.py - read all data from
+
+
+import openpyxl, pprint, re
+
+
+def collect_headers(file_name, sheet_name):
+    wb = openpyxl.load_workbook(file_name)
+    sheet = wb.get_sheet_by_name(sheet_name)
+
+    headers =[]
+
+    for column in range(0, sheet.max_column):
+        title = sheet[chr(ord('A') + column) + str(1)].value
+        headers.append(title)
+    return headers
+
+def get_how_many_rows(file_name, sheet_name):
+    wb = openpyxl.load_workbook(file_name)
+    sheet = wb.get_sheet_by_name(sheet_name)
+
+    for row in range(2, sheet.max_column + 1):
+        if sheet['A' + str(row)].internal_value != None:
+            max_number = row
+            #print(max_number)
+    return max_number
+
+
+def read_all_data(file_name, sheet_name):
+
+    print('Opening workbook...')
+    wb = openpyxl.load_workbook(file_name)
+    sheet = wb.get_sheet_by_name(sheet_name)
+    sheet_data = []
+
+    # TODO: Fill in countyData with each county's population and tracts.
+    print('Reading rows...')
+    #Reading header row
+    header_array = collect_headers(file_name, sheet_name)
+    max_row_number = get_how_many_rows(file_name, sheet_name)
+    print('rows= ', max_row_number)
+    #print('rows= ', sheet.max_row)
+    print('columns= ', sheet.max_column)
+
+    row_content = {}
+    for row in range(2, max_row_number):
+        for column in range(0, sheet.max_column):
+            cell_value = sheet[chr(ord('A') + column) + str(row)].value
+            row_content[header_array[column]] = cell_value
+        sheet_data.append(row_content)
+        print(row_content)
+
+    print(sheet_data)
+
+    # TODO: Open a new text file and write the contents of countyData to it.
+
+def search_person(file_name, sheet_name, column_to_check, name):
+    matching_column_id = ''
+
+    print('Opening workbook...')
+    wb = openpyxl.load_workbook(file_name)
+    sheet = wb.get_sheet_by_name(sheet_name)
+
+    for row in range(2, sheet.max_row + 1):
+        if name == sheet[column_to_check + str(row)].value:
+            matching_column_id = row
+            #matching_column_id.append(row)
+    return matching_column_id
+
+def search_person_data_by_row (file_name, sheet_name,column_id):
+    wb = openpyxl.load_workbook(file_name)
+    sheet = wb.get_sheet_by_name(sheet_name)
+    person_data = {}
+    header_array = collect_headers(file_name, sheet_name)
+
+    company = sheet['A' + str(column_id)].value
+    name = sheet['B' + str(column_id)].value
+    short_name = sheet['C' + str(column_id)].value
+    phone_number = sheet['D' + str(column_id)].value[1:]
+    preferred_app = sheet['E' + str(column_id)].value
+
+    person_data = {header_array[0]: company, header_array[1]: name, header_array[2]: short_name, header_array[3]: phone_number,
+                   header_array[4]: preferred_app}
+    print(person_data)
+
+#header_array = collect_headers('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','DB')
+#print(header_array)
+#search_column_id = search_person('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Turakiserok','C','Sam')
+#print(search_column_id)
+#search_person_data_by_row ('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Turakiserok', search_column_id)
+read_all_data('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Programs')
