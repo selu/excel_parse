@@ -9,12 +9,13 @@ def collect_headers(file_name, sheet_name):
     wb = openpyxl.load_workbook(file_name)
     sheet = wb.get_sheet_by_name(sheet_name)
 
-    headers =[]
+    headers = []
 
     for column in range(0, sheet.max_column):
         title = sheet[chr(ord('A') + column) + str(1)].value
         headers.append(title)
     return headers
+
 
 def which_column(file_name, sheet_name, column_to_search):
     headers = collect_headers(file_name, sheet_name)
@@ -31,25 +32,23 @@ def get_how_many_rows(file_name, sheet_name):
     for row in range(2, sheet.max_column + 1):
         if sheet['A' + str(row)].internal_value != None:
             max_number = row
-            #print(max_number)
+            # print(max_number)
     return max_number
 
 
 def read_all_data(file_name, sheet_name):
-
     print('Opening workbook...')
     wb = openpyxl.load_workbook(file_name)
     sheet = wb.get_sheet_by_name(sheet_name)
     sheet_data = []
 
-    # TODO: Fill in countyData with each county's population and tracts.
     print('Reading rows...')
-    #Reading header row
+    # Reading header row
     header_array = collect_headers(file_name, sheet_name)
     max_row_number = get_how_many_rows(file_name, sheet_name)
-    print('rows= ', max_row_number)
-    #print('rows= ', sheet.max_row)
-    print('columns= ', sheet.max_column)
+    #print('rows= ', max_row_number)
+    # print('rows= ', sheet.max_row)
+    #print('columns= ', sheet.max_column)
 
     row_content = {}
     for row in range(2, max_row_number):
@@ -63,38 +62,54 @@ def read_all_data(file_name, sheet_name):
 
     # TODO: Open a new text file and write the contents of countyData to it.
 
-def search_person(file_name, sheet_name, column_to_check, name):
-    matching_column_id = ''
+
+def get_matching_rows_id_by_column(file_name, sheet_name, column_to_check, search_value):
+    matching_column_id = []
 
     print('Opening workbook...')
     wb = openpyxl.load_workbook(file_name)
     sheet = wb.get_sheet_by_name(sheet_name)
+    max_row_number = get_how_many_rows(file_name, sheet_name)
 
-    for row in range(2, sheet.max_row + 1):
-        if name == sheet[column_to_check + str(row)].value:
-            matching_column_id = row
-            #matching_column_id.append(row)
+    for row in range(2, max_row_number + 1):
+        if search_value == sheet[column_to_check + str(row)].value:
+            matching_column_id.append(row)
     return matching_column_id
 
-def search_data_by_row (file_name, sheet_name,row_id):
+
+def search_data_by_row(file_name, sheet_name, row_id):
     wb = openpyxl.load_workbook(file_name)
     sheet = wb.get_sheet_by_name(sheet_name)
-    person_data = {}
-    row_content ={}
+    row_content = {}
+    search_result = []
     header_array = collect_headers(file_name, sheet_name)
 
-    for column in range(0, sheet.max_column):
-        cell_value = sheet[chr(ord('A') + column) + str(row_id)].value
-        row_content[header_array[column]] = cell_value
+    for i, row_id in enumerate(row_id):
+        for column in range(0, sheet.max_column):
+            cell_value = sheet[chr(ord('A') + column) + str(row_id)].value
+            row_content[header_array[column]] = cell_value
+        search_result.append(row_content)
+    return search_result
 
-    print(row_content)
 
-#header_array = collect_headers('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','DB')
-#print(header_array)
-result_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Idegenvezetok','Short name')
-print(result_column)
-search_row_id = search_person('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Idegenvezetok', result_column, 'Ancsi')
-print(search_row_id)
-search_data_by_row ('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Idegenvezetok', search_row_id)
-#read_all_data('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Programs')
+# header_array = collect_headers('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','DB')
+# print(header_array)
 
+result_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Turakiserok', 'Short name')
+# print(result_column)
+search_rows_id = get_matching_rows_id_by_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx',
+                                                'Turakiserok', result_column, 'Sam')
+# print(search_rows_id)
+result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Turakiserok',
+                            search_rows_id)
+print(result)
+read_all_data('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Programs')
+
+
+result_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', 'Tour Leader contact')
+# print(result_column)
+search_rows_id = get_matching_rows_id_by_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB',
+                                                result_column, 'Sam')
+# print(search_rows_id)
+result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', search_rows_id)
+print(result)
