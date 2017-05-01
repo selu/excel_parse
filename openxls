@@ -121,56 +121,102 @@ def search_data_by_row(file_name, sheet_name, row_id):
         for i, row_id in enumerate(row_id):
             for column in range(0, sheet.max_column):
                 cell_value = sheet[chr(ord('A') + column) + str(row_id)].value
-                #print(cell_value, type(cell_value))
                 if header_array[column] == 'Phone number':
                     cell_value = format_phone_number(cell_value)
                 row_content[header_array[column]] = cell_value
-            search_result.append(row_content)
+                #print(row_content)
+            search_result.append(dict(row_content))
+        #print(search_result)
         return search_result
     return False
 
 
-# TODO: How to search Tour Leader contact details
+# TODO: Search Tour Leader contact details
 #result_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Turakiserok', 'Short name')
 #search_rows_id = get_matching_rows_id_by_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Turakiserok', result_column, 'Sam')
 #result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Turakiserok', search_rows_id)
 #print(result)
 
+# TODO: Search Idegenvezetok contact details
+#result_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Idegenvezetok', 'Short name')
+#search_rows_id = get_matching_rows_id_by_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Idegenvezetok', result_column, 'Ancsi')
+#result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Idegenvezetok', search_rows_id)
+#print(result)
+
+# TODO: Search Program details
+#result_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Programs', 'Short name')
+#search_rows_id = get_matching_rows_id_by_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Programs', result_column, '3h Budapest Sightseeing')
+#result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Programs', search_rows_id)
+#print(result)
+
+# TODO: Search Restaurant details
+#result_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Restaurants', 'Name')
+#search_rows_id = get_matching_rows_id_by_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Restaurants', result_column, 'Inyenckert')
+#result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'Restaurants', search_rows_id)
+#print(result)
+
 # TODO: Read all data from a sheet
 #read_all_data('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx','Programs')
 
-# TODO: Collect all matching rows for a person
+# TODO: Collect all matching rows for a Tour Lead
 #result_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', 'Tour Leader contact')
 #search_rows_id = get_matching_rows_id_by_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', result_column, 'Sam')
 #result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', search_rows_id)
 #print(result)
 
-# TODO: Collect all programs for a group
+# TODO: Collect all programs for a group (arrival date as input)
 #current_date = datetime.datetime.now()
-#input_var = input("Enter date (2017-04-22): ")
-#input_date = datetime.datetime.strptime(input_var, '%Y-%m-%d')
+input_var = input("Enter date (2017-04-22): ")
+input_date = datetime.datetime.strptime(input_var, '%Y-%m-%d')
 #print(input_date, type(input_date))
 #print(current_date)
 #print(current_date - datetime.timedelta(days=3))
 #target_date = datetime.date(2017, 4, 22)
 #print('target date', target_date, type(target_date))
-#arrive_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', 'Group arrival date')
+arrive_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', 'Group arrival date')
 #print(arrive_column, type(arrive_column))
-#tour_lead_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', 'Tour Leader contact')
+tour_lead_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', 'Tour Leader contact')
 #print(tour_lead_column, type(tour_lead_column))
-#search_rows_id = get_all_programs_for_group('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', arrive_column, input_date, tour_lead_column, 'Sam')
+search_rows_id = get_all_programs_for_group('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', arrive_column, input_date, tour_lead_column, 'Sam')
+#print(search_rows_id)
+result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', search_rows_id)
+#print(result)
+
+
+# TODO: Create sightseeing program message
+#import template_programdetail
+#param_program = {'Program Start Time': datetime.time(9, 15), 'Pax': 23.0, 'Location': 'Heroes', 'Program Date': datetime.datetime(2017, 4, 23, 0, 0), 'GroupId': None, 'Group arrival date': datetime.datetime(2017, 4, 22, 0, 0), 'IdVez': 'Ancsi', 'Going to': 'Krakkow', 'Program Finish Time': datetime.time(12, 15), 'No. of tour leader': 2.0, 'Program': '3h Budapest Sightseeing', 'Menu': None, 'Arrive from': 'Wien', 'Hotel': 'Novotel', 'Company': 'EU Holidays', 'Group departure date': datetime.datetime(2017, 4, 23, 0, 0), 'Tour Leader contact': 'Sam'}
+#param_idvez = {'Phone number': '+36203402594', 'Preferred app': 'whatsapp', 'Name': 'Valami Ancsi', None: None, 'Short name': 'Ancsi'}
+#param_program_detail = {'Length': '3h', 'Start location': "Heroe's Square", 'Short name': '3h Budapest Sightseeing', 'End location': 'TBD', 'Full name': '3h, Budapest Sightseeing', 'Details': "Heroe's Square - Andrassy Ave. - Basilica - Parliament - Castle", 'Location': None}
+#template_programdetail.sigthseeing_program_message(param_program, param_idvez, param_program_detail)
+
+# TODO: Create eating program message
+#import template_programdetail
+#param_program = {'GroupId': None, 'Pax': 23.0, 'Program': 'Folklor Dinner, Inyenckert', 'IdVez': None, 'Group departure date': datetime.datetime(2017, 4, 23, 0, 0), 'Group arrival date': datetime.datetime(2017, 4, 22, 0, 0), 'Tour Leader contact': 'Sam', 'Program Finish Time': datetime.time(22, 0), 'Going to': 'Krakkow', 'Location': 'Inyenckert', 'Program Date': datetime.datetime(2017, 4, 22, 0, 0), 'Hotel': 'Novotel', 'Program Start Time': datetime.time(19, 30), 'Menu': '22 Duck leg;3 Vegetarian', 'Arrive from': 'Wien', 'No. of tour leader': 2.0, 'Company': 'EU Holidays'}
+#param_restaurant = {'Name': 'Inyenckert', 'Menu2 main course': 'Duck leg', 'Menu1 main course': 'Duck leg', 'Menu2 short name': 'Vegetarian', 'Menu1 1st course': 'Beef Gulas', 'Menu2 1st course': 'Vegetable soup', 'Web': 'http://inyenckert.hu/en/contact/', 'Address': 'Budapest, III.dist. Vörösvári út 131.', 'Menu1 short name': 'Duck leg', 'Phone number': '+36304761316'}
+#template_programdetail.eating_program_message(param_program, param_restaurant)
+
+
+# TODO: Collect upcoming groups in X days
+#current_date = datetime.datetime.now()
+#input_var = int(input("Enter how many days in the future (default = 7 days) : ") or "7")
+#print(current_date)
+#print(current_date + datetime.timedelta(days=input_var))
+#arrive_date_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', 'Group arrival date')
+#print(arrive_date_column)
+#search_rows_id = get_matching_rows_id_by_time_interval('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', arrive_date_column, 7)
 #print(search_rows_id)
 #result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', search_rows_id)
 #print(result)
 
-# TODO: Collect upcoming groups in X days
-current_date = datetime.datetime.now()
-#input_var = int(input("Enter how many days in the future (default = 7 days) : ") or "7")
-print(current_date)
-#print(current_date + datetime.timedelta(days=input_var))
-arrive_date_column = which_column('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', 'Group arrival date')
-print(arrive_date_column)
-search_rows_id = get_matching_rows_id_by_time_interval('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', arrive_date_column, 7)
-print(search_rows_id)
-result = search_data_by_row('c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx', 'DB', search_rows_id)
-print(result)
+# TODO: Send SMS
+# import sendMessage
+# sendMessage.sendSMS('+36302873304','Szia Mano! Tudok kuldeni fasza SMSt mar a szamitogeprol! :)')
+
+# TODO: Send Whatsapp
+#import runpy
+#runpy.send_message(36209849140, 'Faszom')
+
+# TODO: Fill summary template mail
+#import template
+#result = summary
