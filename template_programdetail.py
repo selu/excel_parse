@@ -30,6 +30,8 @@ def sigthseeing_program_message(program, idvez, program_details):
 
 
 def eating_program_message(program, restaurant):
+    print(program)
+    print(restaurant)
 
     Program = program['Program']
     Date = program['Program Date'].strftime(date_format)
