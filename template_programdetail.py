@@ -5,6 +5,31 @@ import datetime
 date_format = "%d %b %Y"
 time_format = "%H:%M"
 
+def group_summary_message(program):
+    #Summary for group: EU Holidays, 17 / 04 / 08
+
+    #Budapest Sightseeing, 3h: 2017 - 04 - 08, 9: 15 - 12:15
+    #Lunch: Borlabor, 2017 - 04 - 08, 12: 30
+    #Folklor Dinner: Inyenckert, 2017 - 04 - 08, 19: 30
+
+    Company = program[0]['Company']
+    Group_arrival_date = program[0]['Group arrival date'].strftime(date_format)
+    Group_departure_date = program[0]['Group departure date'].strftime(date_format)
+
+    summary = Template("Summary for group: {{Company}}, {{Group_arrival_date}} - {{Group_departure_date}}\n"
+                     "\n")
+    summary_message = summary.render(Company = Company, Group_arrival_date = Group_arrival_date, Group_departure_date = Group_departure_date)
+    #print(summary_message)
+    for i in range(len(program)):
+        atomic = Template("{{Event_short_name}}: {{Date}}, {{event_Start_time}}-{{event_Finish_time}}\n\n")
+        summary_message += atomic.render(Event_short_name=program[i]['Program'],
+                      Date=program[i]['Program Date'].strftime(date_format),
+                      event_Start_time=program[i]['Program Start Time'].strftime(time_format),
+                      event_Finish_time=program[i]['Program Finish Time'].strftime(time_format))
+    print(summary_message)
+
+
+
 def sigthseeing_program_message(program, idvez, program_details):
 
     Event_short_name = program['Program']
@@ -30,8 +55,8 @@ def sigthseeing_program_message(program, idvez, program_details):
 
 
 def eating_program_message(program, restaurant):
-    print(program)
-    print(restaurant)
+    #print(program)
+    #print(restaurant)
 
     Program = program['Program']
     Date = program['Program Date'].strftime(date_format)
@@ -55,7 +80,7 @@ def eating_program_message(program, restaurant):
                           "Pax: {{Pax}}\n"
                           "Menu:\n"
                           "{{No_of_menu1}} pax: {{Menu1}}\n"
-                          "{{No_of_menu2}} pax: {{Menu1}}\n")
+                          "{{No_of_menu2}} pax: {{Menu2}}\n")
     print(eating.render(Program=Program, Date=Date, event_Start_time=event_Start_time, event_Finish_time=event_Finish_time,
                         Address=Address, Web=Web, Tel=Tel, Pax=Pax,
                         No_of_menu1=No_of_menu1, Menu1=Menu1,

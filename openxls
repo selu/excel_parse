@@ -139,16 +139,33 @@ def check_program_type(program_to_check):
     search_rows_id = get_matching_rows_id_by_column(filename,
                                                     'Programs', result_column, Program_name)
     program_result = search_data_by_row(filename, 'Programs',
-                                search_rows_id)
+                                        search_rows_id)
     result = program_result[0]['Type']
     #print(result)
     return result
+
+def create_group_summary_message(programs):
+    input_date = datetime.datetime.strptime('2017-04-22', '%Y-%m-%d')
+    ##print(input_date, type(input_date))
+    ##print(current_date)
+    ##print(current_date - datetime.timedelta(days=3))
+    ##target_date = datetime.date(2017, 4, 22)
+    ##print('target date', target_date, type(target_date))
+    arrive_column = which_column(filename, 'DB', 'Group arrival date')
+    ##print(arrive_column, type(arrive_column))
+    tour_lead_column = which_column(filename, 'DB', 'Tour Leader contact')
+    ##print(tour_lead_column, type(tour_lead_column))
+    search_rows_id = get_all_programs_for_group(filename, 'DB', arrive_column, input_date, tour_lead_column, 'Sam')
+    ##print(search_rows_id)
+    programs = search_data_by_row(filename, 'DB', search_rows_id)
+    template_programdetail.group_summary_message(programs)
 
 def create_all_detail_messages(programs):
     for i in range(len(programs)):
         program_type = check_program_type(programs[i])
         if program_type == 'eat':
             param_program = programs[i]
+            print('Faszom', param_program)
             rest_result_column = which_column(filename, 'Restaurants', 'Name')
             search_rows_id = get_matching_rows_id_by_column(filename, 'Restaurants', rest_result_column, programs[i]['Location'])
 
@@ -225,6 +242,7 @@ print(result)
 # TODO: Create messages
     # TODO: Collect all programs for a group (arrival date as input)
     # TODO: Create group summary message
+create_group_summary_message(result)
     # TODO: Create detail messages for all programs
 create_all_detail_messages(result)
 
