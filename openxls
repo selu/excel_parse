@@ -6,10 +6,43 @@ import openpyxl, pprint, datetime
 import template_programdetail
 
 filename = 'c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx'
+#################################################################################
+# Read all data from an excel                                                   #
+#                                                                               #
+# worksheets: List, containing all worksheet names in the excel                 #
+# worksheet_headers: Dict, containig all header values in a list                #
+# sheet_data: List of dict containing all rows data in the DB Worksheet         #
+#################################################################################
+
+wb = openpyxl.load_workbook(filename)
+worksheets = wb.get_sheet_names()
+#print('Name of worksheets', worksheets)
+worksheet_headers = {}
+
+for i in range(len(worksheets)):
+    sheet = wb.get_sheet_by_name(worksheets[i])
+    headers_for_sheet = []
+    for column in range(0, sheet.max_column):
+        title = sheet[chr(ord('A') + column) + str(1)].value
+        headers_for_sheet.append(title)
+        #print(headers_for_sheet)
+    worksheet_headers[worksheets[i]] =headers_for_sheet
+#print('HEADERS dict', worksheet_headers)
+
+
+def get_how_many_rows(file_name, sheet_name):
+    sheet = wb.get_sheet_by_name(sheet_name)
+
+    for row in range(2, sheet.max_column + 1):
+        if sheet['A' + str(row)].internal_value != None:
+            max_number = row
+            # print(max_number)
+    return max_number
 
 def collect_headers(file_name, sheet_name):
     wb = openpyxl.load_workbook(file_name)
     sheet = wb.get_sheet_by_name(sheet_name)
+    #print('Sheet', sheet)
 
     headers = []
 
@@ -23,28 +56,18 @@ def format_phone_number(phone_number):
     normalized_phone_number = phone_number[1:]
     return normalized_phone_number
 
-def which_column(file_name, sheet_name, column_to_search):
-    headers = collect_headers(file_name, sheet_name)
+def which_column(sheet_name, column_to_search):
 
-    for i, val in enumerate(headers):
-        if val == column_to_search:
-            return chr(ord('A') + i)
+    for i in range(len(worksheet_headers)):
+        for x in range(len(worksheet_headers[sheet_name])):
+            if worksheet_headers[sheet_name][x] == column_to_search:
+                #print('NEW', worksheet_headers[sheet_name][x], chr(ord('A') + x))
+                return chr(ord('A') + x)
 
-
-def get_how_many_rows(file_name, sheet_name):
-    wb = openpyxl.load_workbook(file_name)
-    sheet = wb.get_sheet_by_name(sheet_name)
-
-    for row in range(2, sheet.max_column + 1):
-        if sheet['A' + str(row)].internal_value != None:
-            max_number = row
-            # print(max_number)
-    return max_number
 
 
 def read_all_data(file_name, sheet_name):
-    print('Opening workbook...')
-    wb = openpyxl.load_workbook(file_name)
+
     sheet = wb.get_sheet_by_name(sheet_name)
     sheet_data = []
 
@@ -72,8 +95,6 @@ def read_all_data(file_name, sheet_name):
 def get_matching_rows_id_by_column(file_name, sheet_name, column_to_check, search_value):
     matching_column_id = []
 
-    print('Opening workbook...')
-    wb = openpyxl.load_workbook(file_name)
     sheet = wb.get_sheet_by_name(sheet_name)
     max_row_number = get_how_many_rows(file_name, sheet_name)
 
@@ -85,8 +106,6 @@ def get_matching_rows_id_by_column(file_name, sheet_name, column_to_check, searc
 def get_matching_rows_id_by_time_interval(file_name, sheet_name, column_to_check, interval):
     matching_column_id = []
 
-    print('Opening workbook...')
-    wb = openpyxl.load_workbook(file_name)
     sheet = wb.get_sheet_by_name(sheet_name)
     max_row_number = get_how_many_rows(file_name, sheet_name)
 
@@ -103,7 +122,6 @@ def get_matching_rows_id_by_time_interval(file_name, sheet_name, column_to_check
 def get_all_programs_for_group(file_name, sheet_name, column_to_check, search_value, tour_lead_column, tour_leader):
     matching_column_id = []
 
-    wb = openpyxl.load_workbook(file_name)
     sheet = wb.get_sheet_by_name(sheet_name)
     max_row_number = get_how_many_rows(file_name, sheet_name)
 
@@ -113,7 +131,7 @@ def get_all_programs_for_group(file_name, sheet_name, column_to_check, search_va
     return matching_column_id
 
 def search_data_by_row(file_name, sheet_name, row_id):
-    wb = openpyxl.load_workbook(file_name)
+
     sheet = wb.get_sheet_by_name(sheet_name)
     row_content = {}
     search_result = []
@@ -135,7 +153,7 @@ def search_data_by_row(file_name, sheet_name, row_id):
 
 def check_program_type(program_to_check):
     Program_name = program_to_check['Program']
-    result_column = which_column(filename, 'Programs', 'Short name')
+    result_column = which_column('Programs', 'Short name')
     search_rows_id = get_matching_rows_id_by_column(filename,
                                                     'Programs', result_column, Program_name)
     program_result = search_data_by_row(filename, 'Programs',
@@ -145,43 +163,47 @@ def check_program_type(program_to_check):
     return result
 
 def create_group_summary_message(programs):
-    input_date = datetime.datetime.strptime('2017-04-22', '%Y-%m-%d')
+    input_date = datetime.datetime.strptime('2017-05-13', '%Y-%m-%d')
     ##print(input_date, type(input_date))
     ##print(current_date)
     ##print(current_date - datetime.timedelta(days=3))
     ##target_date = datetime.date(2017, 4, 22)
     ##print('target date', target_date, type(target_date))
-    arrive_column = which_column(filename, 'DB', 'Group arrival date')
+    arrive_column = which_column('DB', 'Group arrival date')
     ##print(arrive_column, type(arrive_column))
-    tour_lead_column = which_column(filename, 'DB', 'Tour Leader contact')
+    tour_lead_column = which_column('DB', 'Tour Leader contact')
     ##print(tour_lead_column, type(tour_lead_column))
-    search_rows_id = get_all_programs_for_group(filename, 'DB', arrive_column, input_date, tour_lead_column, 'Sam')
+    search_rows_id = get_all_programs_for_group(filename, 'DB', arrive_column, input_date, tour_lead_column, 'Josephine')
     ##print(search_rows_id)
     programs = search_data_by_row(filename, 'DB', search_rows_id)
-    template_programdetail.group_summary_message(programs)
+    return template_programdetail.group_summary_message(programs)
 
 def create_all_detail_messages(programs):
+    c = ''
+    #print(programs)
     for i in range(len(programs)):
         program_type = check_program_type(programs[i])
         if program_type == 'eat':
             param_program = programs[i]
-            print('Faszom', param_program)
-            rest_result_column = which_column(filename, 'Restaurants', 'Name')
+            rest_result_column = which_column('Restaurants', 'Name')
             search_rows_id = get_matching_rows_id_by_column(filename, 'Restaurants', rest_result_column, programs[i]['Location'])
 
             param_restaurant = search_data_by_row(filename, 'Restaurants', search_rows_id)
-            template_programdetail.eating_program_message(param_program, param_restaurant[0])
+            c += template_programdetail.eating_program_message(param_program, param_restaurant[0]) + '\n\n'
+            #print("Fassssskarika: ",template_programdetail.eating_program_message(param_program, param_restaurant[0]))
         elif program_type == 'sightseeing':
             param_program = programs[i]
 
-            result_column = which_column(filename, 'Idegenvezetok', 'Short name')
+            result_column = which_column('Idegenvezetok', 'Short name')
             search_rows_id = get_matching_rows_id_by_column(filename, 'Idegenvezetok', result_column, programs[i]['IdVez'])
             param_idvez = search_data_by_row(filename, 'Idegenvezetok', search_rows_id)
 
-            result_column = which_column(filename, 'Programs', 'Short name')
+            result_column = which_column('Programs', 'Short name')
             search_rows_id = get_matching_rows_id_by_column(filename, 'Programs', result_column, programs[i]['Program'])
             param_program_detail = search_data_by_row(filename, 'Programs', search_rows_id)
-            template_programdetail.sigthseeing_program_message(param_program, param_idvez[0], param_program_detail[0])
+            c += template_programdetail.sigthseeing_program_message(param_program, param_idvez[0], param_program_detail[0]) + '\n\n'
+            #print("Maeradafaa: ", template_programdetail.sigthseeing_program_message(param_program, param_idvez[0], param_program_detail[0]))
+    return c
 
 
 # TODO: Search Tour Leader contact details
@@ -224,27 +246,29 @@ def create_all_detail_messages(programs):
 ##current_date = datetime.datetime.now()
 #input_var = input("Enter date (2017-04-22): ")
 #input_date = datetime.datetime.strptime(input_var, '%Y-%m-%d')
-input_date = datetime.datetime.strptime('2017-04-22', '%Y-%m-%d')
+input_date = datetime.datetime.strptime('2017-05-13', '%Y-%m-%d')
 ##print(input_date, type(input_date))
 ##print(current_date)
 ##print(current_date - datetime.timedelta(days=3))
 ##target_date = datetime.date(2017, 4, 22)
 ##print('target date', target_date, type(target_date))
-arrive_column = which_column(filename, 'DB', 'Group arrival date')
+arrive_column = which_column('DB', 'Group arrival date')
 ##print(arrive_column, type(arrive_column))
-tour_lead_column = which_column(filename, 'DB', 'Tour Leader contact')
+tour_lead_column = which_column('DB', 'Tour Leader contact')
 ##print(tour_lead_column, type(tour_lead_column))
-search_rows_id = get_all_programs_for_group(filename, 'DB', arrive_column, input_date, tour_lead_column, 'Sam')
+search_rows_id = get_all_programs_for_group(filename, 'DB', arrive_column, input_date, tour_lead_column, 'Josephine')
 ##print(search_rows_id)
 result = search_data_by_row(filename, 'DB', search_rows_id)
-print(result)
+#print(result)
 
 # TODO: Create messages
     # TODO: Collect all programs for a group (arrival date as input)
     # TODO: Create group summary message
-create_group_summary_message(result)
+elso = create_group_summary_message(result)
+print(elso)
     # TODO: Create detail messages for all programs
-create_all_detail_messages(result)
+mail_content = str(elso) + '\n' + str(create_all_detail_messages(result))
+print(mail_content)
 
 
 #check_program_type({'Group departure date': datetime.datetime(2017, 4, 23, 0, 0), 'Menu': None, 'Location': 'Heroes', 'No. of tour leader': 2.0, 'GroupId': None, 'Arrive from': 'Wien', 'Program Start Time': datetime.time(9, 15), 'Going to': 'Krakkow', 'Program Date': datetime.datetime(2017, 4, 23, 0, 0), 'IdVez': 'Ancsi', 'Tour Leader contact': 'Sam', 'Pax': 23.0, 'Program Finish Time': datetime.time(12, 15), 'Hotel': 'Novotel', 'Company': 'EU Holidays', 'Group arrival date': datetime.datetime(2017, 4, 22, 0, 0), 'Program': '3h Budapest Sightseeing'})
@@ -285,5 +309,5 @@ create_all_detail_messages(result)
 #runpy.send_message(36209849140, 'Faszom')
 
 # TODO: Fill summary template mail
-#import template
-#result = summary
+#import mail
+#mail.send_mail('Proba', mail_content)

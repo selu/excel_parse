@@ -12,6 +12,7 @@ def group_summary_message(program):
     #Lunch: Borlabor, 2017 - 04 - 08, 12: 30
     #Folklor Dinner: Inyenckert, 2017 - 04 - 08, 19: 30
 
+    #print(program)
     Company = program[0]['Company']
     Group_arrival_date = program[0]['Group arrival date'].strftime(date_format)
     Group_departure_date = program[0]['Group departure date'].strftime(date_format)
@@ -21,12 +22,13 @@ def group_summary_message(program):
     summary_message = summary.render(Company = Company, Group_arrival_date = Group_arrival_date, Group_departure_date = Group_departure_date)
     #print(summary_message)
     for i in range(len(program)):
-        atomic = Template("{{Event_short_name}}: {{Date}}, {{event_Start_time}}-{{event_Finish_time}}\n\n")
+        atomic = Template("  {{Event_short_name}}: {{Date}}, {{event_Start_time}}-{{event_Finish_time}}\n\n")
         summary_message += atomic.render(Event_short_name=program[i]['Program'],
                       Date=program[i]['Program Date'].strftime(date_format),
                       event_Start_time=program[i]['Program Start Time'].strftime(time_format),
                       event_Finish_time=program[i]['Program Finish Time'].strftime(time_format))
-    print(summary_message)
+    #print(type(summary_message), summary_message)
+    return summary_message
 
 
 
@@ -50,8 +52,8 @@ def sigthseeing_program_message(program, idvez, program_details):
                      "Tour Guide Info:\n"
                      "Name: {{Idvez}}\n"
                      "Phone No.: {{Idvez_phone}}")
-    print(varosnezes.render(Event_short_name= Event_short_name, Date=Date,event_Start_time=event_Start_time,event_Finish_time=event_Finish_time,
-                            Meeting_point=Meeting_point, Pax=Pax, No_of_tour_leader=No_of_tour_leader, Idvez=Idvez, Idvez_phone=Idvez_phone))
+    return varosnezes.render(Event_short_name= Event_short_name, Date=Date,event_Start_time=event_Start_time,event_Finish_time=event_Finish_time,
+                            Meeting_point=Meeting_point, Pax=Pax, No_of_tour_leader=No_of_tour_leader, Idvez=Idvez, Idvez_phone=Idvez_phone)
 
 
 def eating_program_message(program, restaurant):
@@ -81,7 +83,8 @@ def eating_program_message(program, restaurant):
                           "Menu:\n"
                           "{{No_of_menu1}} pax: {{Menu1}}\n"
                           "{{No_of_menu2}} pax: {{Menu2}}\n")
-    print(eating.render(Program=Program, Date=Date, event_Start_time=event_Start_time, event_Finish_time=event_Finish_time,
+    return eating.render(Program=Program, Date=Date, event_Start_time=event_Start_time, event_Finish_time=event_Finish_time,
                         Address=Address, Web=Web, Tel=Tel, Pax=Pax,
                         No_of_menu1=No_of_menu1, Menu1=Menu1,
-                        No_of_menu2=No_of_menu2, Menu2=Menu2))
+                        No_of_menu2=No_of_menu2, Menu2=Menu2)
+
