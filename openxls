@@ -5,7 +5,7 @@
 import openpyxl, pprint, datetime
 import template_programdetail
 
-filename = 'c:\Python\Twintours szingapur\Twintours 2018 Szingapur.xlsx'
+filename = 'Twintours 2018 Szingapur.xlsx'
 #################################################################################
 # Read all data from an excel                                                   #
 #                                                                               #
